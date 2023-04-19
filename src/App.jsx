@@ -1,86 +1,118 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { Login } from './login' 
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState('')
+  const [code, setCode] = useState('')
+  const [output, setOutput] = useState('')
 
-  return (
-    <div className='bg-black w-full h-screen flex text-white'>
-      <div className='mx-auto my-24 h-4/5 w-3/5 bg-zinc-700 border rounded-lg border-zinc-600'>
-    <div className='flex flex-nowrap flex-row gap-x-3 ml-2' /* header */>
-    <span className='w-4 h-4 rounded-full bg-red-500 mt-2'></span>
-    <span className='w-4 h-4 rounded-full bg-yellow-500 mt-2'></span>
-    <span className='w-4 h-4 rounded-full bg-green-500 mt-2'></span>
-    </div>
-
-    <div className='border rounded-lg mt-2 border-zinc-600' /* divider */ />
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let result;
+      let modifiedCode = code;
+      if (modifiedCode.includes("let") || modifiedCode.includes("const")) {
+        result = new Function(modifiedCode)();
+      } else {
+        const consoleRegex = /console/g;
+        if (consoleRegex.test(modifiedCode)) {
+          modifiedCode = modifiedCode.replaceAll(consoleRegex, "tempConsole");
+          try {
+            result = new Function(modifiedCode)();
+            result = result
+              .toString()
+              .replaceAll("tempConsole", "console");
+          } catch (error) {
+            setOutput(error.message.replaceAll("tempConsole", "console"));
+            return;
+          }
+        } else {
+          result = new Function(`return ${modifiedCode}`)();
+        }
+      }
+      setOutput(String(result));
+    } catch (error) {
+      setOutput(error.message);
+    }
+  };
+  
   
 
-    <div className='grid grid-cols-2 h-full'>
-      <div class="border-r-2  mt-2 border-zinc-600 mb-12 relative">
-        <div className='flex'>
-        <p className='ml-2 font-mono'>~ Gabriel$</p> 
-        <span className=' ml-2 mt-1 bg-white px-1 py-2 rounded-sm cursor-text w-2 h-2 animate-blink'></span>
-        </div>
-      
+  
+  
+  return (
+    <>
+    
+  {user ? (
+  <div className='bg-black w-screen h-screen grid text-white'>
+    
+    <div className='mx-auto my-24 h-4/5 w-3/5 bg-zinc-700 border rounded-lg border-zinc-600'>
+  <div className='flex flex-nowrap flex-row gap-x-3 ml-2' /* header */>
+  <span className='w-4 h-4 rounded-full bg-red-500 mt-2'></span>
+  <span className='w-4 h-4 rounded-full bg-yellow-500 mt-2'></span>
+  <span className='w-4 h-4 rounded-full bg-green-500 mt-2'></span>
+  </div>
 
-        <div /* mock */>
-          <p className='ml-4 mt-3 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-white'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-200'> exemplo de código     '/'      exemplo de código </p>
-        
-        <p className='ml-4 mb-0.5 font-mono text-green-200'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-200'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-500'> exemplo de código     '/'      exemplo de código </p>
-        </div>
-        
-        
-      <button class=" absolute bottom-0 right-0 bg-zinc-600 mr-2 hover:bg-zinc-500 font-mono py-0.5 px-6 rounded-full">
-            Run
-      </button>
-      
-      </div>
-      <div class="mt-2 mb-12 relative">
-        <div /* mock */>
-        <p className='ml-4 mb-0.5 font-mono text-green-600 mt-9'> resultado esperado: </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-600'> x </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-600'> resultado obtido: </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-600'> x </p>
-        <p className='ml-4 mb-0.5 font-mono text-green-600'> rodou perfeito colega ! mete o pé</p>
-        </div>
-       
-      <button class=" absolute bottom-0 right-0 bg-zinc-600 mr-2 hover:bg-zinc-500 font-mono py-0.5 px-6 rounded-full">
-          Clear
-      </button>
+  <div className='border rounded-lg mt-2 border-zinc-600' /* divider */ />
 
+
+  <div className='grid grid-cols-2 h-full w-full'>
+    <div className="border-r-2 w-full mt-2 border-zinc-600 mb-12 relative">
+      <div className='flex w-full h-full pr-20'>   
+        <p className='pl-1'>{`${user}@web~$: >`}</p>
+
+        <form action="" onSubmit={handleSubmit}
+           >
+
+        <textarea
+          className=' caret-rose-600 resize-none pt-1 w-96 h-full ml-5 font-mono bg-zinc-700 border-none outline-none overflow-hidden 
+          '
+          value={code}
+          onChange={e => setCode(e.target.value)}
+        />  
+
+            <button 
+
+            className=" absolute bottom-0 right-0 mr-2 font-mono py-0.5 px-6 rounded-lg bg-gradient-to-r from-green-400 via-green-500 to-green-600  text-zinc-900 hover:bg-gradient-to-br focus:ring-4 focus:outline-none shadow-lg shadow-green-500/50">
+              Run
+             </button>
+        </form>
+        
       </div>
-    </div>
+    
+
+      
       
     
-  </div>
+    
     </div>
+    <div className="mt-2 mb-12 relative">
+    <textarea
+          className=' caret-rose-600 resize-none w-96 pt-1 h-full ml-5 text-white font-mono bg-zinc-700 border-none outline-none overflow-hidden 
+          '
+          value={String(output)}
+          
+        ></textarea>
+     
+      <button onClick={() => setOutput('')} className=" absolute bottom-0 right-0 mr-2 font-mono py-0.5 px-4 rounded-lg text-zinc-800 bg-gradient-to-r from-zinc-400 via-zinc-500 to-zinc-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none">
+          Clear
+    </button>
+
+    </div>
+  </div>
+    
+  
+</div>
+  </div>) : (  <Login setUser={setUser}></Login> ) }
+
+
+</>
   )
 }
 
 export default App
+
+
+
