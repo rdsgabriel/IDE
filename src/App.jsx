@@ -1,45 +1,47 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { Login } from './login' 
-
 import './App.css'
+
+
 
 function App() {
   const [user, setUser] = useState('')
   const [code, setCode] = useState('')
   const [output, setOutput] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  function execute(code) {
+    let output = '';
+    const console = {
+      log: (msg) => (output += `${msg}`),
+    };
+
     try {
-      let result;
-      let modifiedCode = code;
-      if (modifiedCode.includes("let") || modifiedCode.includes("const")) {
-        result = new Function(modifiedCode)();
-      } else {
-        const consoleRegex = /console/g;
-        if (consoleRegex.test(modifiedCode)) {
-          modifiedCode = modifiedCode.replaceAll(consoleRegex, "tempConsole");
-          try {
-            result = new Function(modifiedCode)();
-            result = result
-              .toString()
-              .replaceAll("tempConsole", "console");
-          } catch (error) {
-            setOutput(error.message.replaceAll("tempConsole", "console"));
-            return;
-          }
-        } else {
-          result = new Function(`return ${modifiedCode}`)();
-        }
+      const result = eval(code);
+      if (result !== undefined) {
+        output = result;
       }
-      setOutput(String(result));
-    } catch (error) {
-      setOutput(error.message);
+    } catch (e) {
+      console.log(e);
+      output = e
     }
-  };
+    return [output];
+  }
+  
   
   
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    try {
+      const result = execute(code)
+      setOutput(result)
+    } catch (error) {
+      setOutput(error.message)
+    }
+  }
+  
+ 
   
   
   return (
@@ -63,7 +65,7 @@ function App() {
       <div className='flex w-full h-full pr-20'>   
         <p className='pl-1'>{`${user}@web~$: >`}</p>
 
-        <form action="" onSubmit={handleSubmit}
+        <form action="" onSubmit={handleSubmit} 
            >
 
         <textarea
